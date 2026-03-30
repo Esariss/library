@@ -3,7 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from backend.library_app.config import setting
 
-from library_app.models import Books, Borrow, Users
 
 engine = create_engine(setting.database_url, connect_args={"check_same_thread": False})
 
@@ -20,5 +19,5 @@ def get_bd():
 
 def init_db():
      Base.metadata.create_all(bind=engine)
-init_db()
+#init_db()
 

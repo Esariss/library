@@ -7,4 +7,4 @@ class Users(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
     lastname: Mapped[str]
-    login: Mapped[str] = mapped_column(unique=True, Nullable=False)
+    login: Mapped[str] = mapped_column(unique=True, nullable=False)
