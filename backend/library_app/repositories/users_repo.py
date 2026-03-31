@@ -22,7 +22,7 @@ class UsersRepo:
         return self.db.execute(select(Users).where(Users.login == user_login)).scalars().first()
 
     def create(self, user_data: CreateUser) -> Users:
-        db_user = Users(**user_data.model_dump())
+        db_user = Users(**user_data.model_dump(exclude=True))
         self.db.add(db_user)
         self.db.commit()
         self.db.refresh(db_user)
