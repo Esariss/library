@@ -9,10 +9,8 @@ class Books(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(unique=True)
     description: Mapped[str] = mapped_column(Text)
-    first_count: Mapped[str] = mapped_column(Text)
+    first_count: Mapped[int]
     inventory: Mapped[int]
-
-
 
 
 class Borrow(Base):
