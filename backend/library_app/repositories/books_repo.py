@@ -1,7 +1,7 @@
 from backend.library_app.models import Borrow, Books
-from sqlalchemy import select
+from sqlalchemy import select, update, delete
 from typing import Optional, List
-from backend.library_app.schemas import CreateBook, CreateBorrow
+from backend.library_app.schemas import CreateBook, CreateBorrow, UpdateBook
 from sqlalchemy.orm import Session
 
 class BooksRepo:
@@ -23,6 +23,16 @@ class BooksRepo:
         self.db.commit()
         self.db.refresh(db_book)
         return db_book
+
+    def update(self, book_id: int, book_data: UpdateBook) -> Optional[Books]:
+        updating = self.db.execute(update(Books).where(Books.id == book_id).values(**book_data.model_dump(exclude_unset=True)).returning(Books)).scalar_one_or_none()
+        self.db.commit()
+        return updating
+
+    def delete(self, book_id: int) -> Optional[Books]:
+        deleting = self.db.execute(delete(Books).where(Books.id == book_id).returning(Books)).scalar_one_or_none()
+        self.db.commit()
+        return deleting
 
 class BorrowRepo:
     def __init__(self, db:Session):
@@ -46,3 +56,8 @@ class BorrowRepo:
         self.db.commit()
         self.db.refresh(db_borrow)
         return db_borrow
+
+    def delete(self, borrow_id: int) -> Optional[Borrow]:
+        deleting = self.db.execute(delete(Borrow).where(Borrow.id == borrow_id).returning(Borrow)).scalar_one_or_none()
+        self.db.commit()
+        return deleting
