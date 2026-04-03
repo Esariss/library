@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from backend.database import Base
-from sqlalchemy import Text
+from sqlalchemy import Text, ForeignKey
+from datetime import datetime
 
 class Books(Base):
 
@@ -11,6 +12,7 @@ class Books(Base):
     description: Mapped[str] = mapped_column(Text)
     first_count: Mapped[int]
     inventory: Mapped[int]
+
 
 
 class Borrow(Base):

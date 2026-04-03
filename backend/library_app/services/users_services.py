@@ -19,14 +19,14 @@ class UsersService:
         result = self.repo.get_by_name(user_name)
         if result:
             return result
-        raise HTTPException(status_code=404, detail="users nor found")
+        raise HTTPException(status_code=404, detail="users not found")
 
 
     def search_by_login(self, user_login:str):
         result = self.repo.get_by_login(user_login)
         if result:
             return result
-        raise HTTPException(status_code=404, detail="user nor found")
+        raise HTTPException(status_code=404, detail="user not found")
 
     def create_user(self, user_data):
         if self.repo.login_exist(user_data.login):
@@ -44,4 +44,9 @@ class UsersService:
             raise HTTPException(status_code=404, detail="no right id")
         return self.repo.delete(user_id)
 
-
+    def user_deactivate(self, user_id):
+        if not self.repo.id_exist(user_id):
+            raise HTTPException(status_code=409, detail="no right id")
+        user_data = self.repo.get_by_id(user_id)
+        user_data.is_active = False
+        return self.repo.update(user_id, user_data)

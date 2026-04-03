@@ -1,3 +1,5 @@
+from os.path import exists
+
 from backend.library_app.models import Borrow, Books
 from sqlalchemy import select, update, delete
 from typing import Optional, List
@@ -10,6 +12,9 @@ class BooksRepo:
 
     def get_all(self) -> List[Books]:
         return self.db.execute(select(Books)).scalars().all()
+
+    def get_inventory_count(self, book_id: int) ->  int:
+        return int(self.db.execute(select(Books.inventory).where(Books.id == book_id)).scalar().first())
 
     def get_by_id(self, book_id: int) -> Optional[Books]:
         return self.db.execute(select(Books).where(Books.id == book_id)).scalars().first()
@@ -33,6 +38,17 @@ class BooksRepo:
         deleting = self.db.execute(delete(Books).where(Books.id == book_id).returning(Books)).scalar_one_or_none()
         self.db.commit()
         return deleting
+
+    def title_exists(self, title: str) -> bool:
+        return self.db.execute(select(exists(Books).where(Books.title == title))).scalar()
+
+    def id_exist(self, book_id: int) -> bool:
+        return self.db.execute(select(exists(Books).where(Books.id == book_id))).scalar()
+
+    def minus_inventory(self, book_id: int, minus: int = 1) -> Optional[Books]:
+        updating = self.db.execute(update(Books).where(Books.id == book_id, Books.inventory >= minus).values(inventory= Books.inventory - minus).returning(Books)).scalar_one_or_none()
+        self.db.commit()
+        return updating
 
 class BorrowRepo:
     def __init__(self, db:Session):
@@ -61,3 +77,13 @@ class BorrowRepo:
         deleting = self.db.execute(delete(Borrow).where(Borrow.id == borrow_id).returning(Borrow)).scalar_one_or_none()
         self.db.commit()
         return deleting
+
+    def id_exist(self, borrow_id: int) -> bool:
+        return self.db.execute(select(exists(Borrow).where(Borrow.id == borrow_id))).scalar()
+
+    def book_id_exist(self, book_id: int) -> bool:
+        return self.db.execute(select(exists(Borrow).where(Borrow.book_id == book_id))).scalar()
+
+    def user_id_exist(self, user_id: int) -> bool:
+        return self.db.execute(select(exists(Borrow).where(Borrow.user_id == user_id))).scalar()
+

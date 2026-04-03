@@ -32,7 +32,7 @@ class UsersRepo:
         return self.db.execute(select(exists().where(Users.login == login))).scalar()
 
     def id_exist(self, user_id: int) -> bool:
-        return self.db.execute(select(exists().where(Users.id == user_id))).scalar()
+        return self.db.execute(select(exists(Users).where(Users.id == user_id))).scalar()
 
     def update(self, user_id: int, user_data: UpdateUser) -> Optional[Users]:
         updating = self.db.execute(update(Users).where(Users.id == user_id).values(**user_data.model_dump(exclude_unset=True)).returning(Users)).scalar_one_or_none()

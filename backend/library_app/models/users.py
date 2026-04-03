@@ -8,3 +8,4 @@ class Users(Base):
     name: Mapped[str]
     lastname: Mapped[str]
     login: Mapped[str] = mapped_column(unique=True, nullable=False)
+    is_active: Mapped[bool] = mapped_column(nullable=False, default=True)
