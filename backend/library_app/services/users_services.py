@@ -45,8 +45,8 @@ class UsersService:
         return self.repo.delete(user_id)
 
     def user_deactivate(self, user_id):
-        if not self.repo.id_exist(user_id):
-            raise HTTPException(status_code=409, detail="no right id")
-        user_data = self.repo.get_by_id(user_id)
-        user_data.is_active = False
-        return self.repo.update(user_id, user_data)
+        user = self.repo.get_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="id is no")
+        user.is_active = False
+        return self.repo.update(user)

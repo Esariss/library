@@ -24,3 +24,4 @@ class Borrow(Base):
     book_id: Mapped[int] = mapped_column(ForeignKey("books.id"))
 
     borrowed_at: Mapped[datetime] = mapped_column(default= lambda : datetime.now(timezone.utc))
+    gave_back: Mapped[datetime] = mapped_column(nullable=True)

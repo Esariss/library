@@ -1,10 +1,9 @@
-from os.path import exists
-
 from backend.library_app.models import Borrow, Books
 from sqlalchemy import select, update, delete
 from typing import Optional, List
 from backend.library_app.schemas import CreateBook, CreateBorrow, UpdateBook
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 class BooksRepo:
     def __init__(self, db: Session):
@@ -40,13 +39,18 @@ class BooksRepo:
         return deleting
 
     def title_exists(self, title: str) -> bool:
-        return self.db.execute(select(exists(Books).where(Books.title == title))).scalar()
+        return self.db.execute(select(exists().where(Books.title == title))).scalar()
 
     def id_exist(self, book_id: int) -> bool:
-        return self.db.execute(select(exists(Books).where(Books.id == book_id))).scalar()
+        return self.db.execute(select(exists().where(Books.id == book_id))).scalar()
 
     def minus_inventory(self, book_id: int, minus: int = 1) -> Optional[Books]:
         updating = self.db.execute(update(Books).where(Books.id == book_id, Books.inventory >= minus).values(inventory= Books.inventory - minus).returning(Books)).scalar_one_or_none()
+        self.db.commit()
+        return updating
+
+    def plus_inventory(self, book_id: int, plus: int = 1) -> Optional[Books]:
+        updating = self.db.execute(update(Books).where(Books.id == book_id, ).values(inventory=Books.inventory + plus).returning(Books)).scalar_one_or_none()
         self.db.commit()
         return updating
 
@@ -79,11 +83,20 @@ class BorrowRepo:
         return deleting
 
     def id_exist(self, borrow_id: int) -> bool:
-        return self.db.execute(select(exists(Borrow).where(Borrow.id == borrow_id))).scalar()
+        return self.db.execute(select(exists().where(Borrow.id == borrow_id))).scalar()
 
     def book_id_exist(self, book_id: int) -> bool:
-        return self.db.execute(select(exists(Borrow).where(Borrow.book_id == book_id))).scalar()
+        return self.db.execute(select(exists().where(Borrow.book_id == book_id))).scalar()
 
     def user_id_exist(self, user_id: int) -> bool:
-        return self.db.execute(select(exists(Borrow).where(Borrow.user_id == user_id))).scalar()
+        return self.db.execute(select(exists().where(Borrow.user_id == user_id))).scalar()
 
+    def update_gave_back(self, user_id: int, book_id: int) -> Optional[Borrow]:
+        updating = self.db.execute(
+            update(Borrow).where(Borrow.user_id == user_id, Borrow.book_id == book_id).values(gave_back=datetime.now(timezone.utc)).returning(
+                Borrow)).scalar_one_or_none()
+        self.db.commit()
+        return updating
+
+    def is_gave_back(self,  user_id: int, book_id: int) -> bool:
+        return self.db.execute(select(exists().where(Borrow.user_id == user_id, Borrow.book_id == book_id, Borrow.gave_back.is_not(None)))).scalar()

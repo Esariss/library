@@ -27,4 +27,6 @@ class ResponseBooks(BaseModel):
 class CreateBorrow(BaseModel):
     user_id: int = Field(..., description="User_id")
     book_id: int = Field(..., description="Book id")
+
+
      
