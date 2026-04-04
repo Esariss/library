@@ -8,7 +8,6 @@ class UsersService:
     def get_all_users(self):
         return self.repo.get_all()
 
-
     def search_by_id(self, user_id:int):
         result = self.repo.get_by_id(user_id)
         if result:
@@ -20,7 +19,6 @@ class UsersService:
         if result:
             return result
         raise HTTPException(status_code=404, detail="users not found")
-
 
     def search_by_login(self, user_login:str):
         result = self.repo.get_by_login(user_login)

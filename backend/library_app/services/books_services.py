@@ -31,17 +31,15 @@ class BooksService:
         return book_data
 
     def delite(self, book_id: int):
-        if self.repo.id_exist(book_id):
-            return self.repo.delete(book_id)
-        raise HTTPException(status_code=404, detail="that id is not exists")
+        return self.repo.delete(book_id)
 
     def update(self, book_id: int, book_data):
         if self.repo.id_exist(book_id):
-            return self.repo.update(books_id, book_data)
+            return self.repo.update(book_id, book_data)
         raise HTTPException(status_code=404, detail="that id is not exists")
 
     def minus_inventory(self, book_id: int, minus: int = 1):
-        if self.repo.id_exist(book_id) and self.repo.get_inventory_count >= minus:
+        if self.repo.id_exist(book_id) and self.repo.get_inventory_count(book_id) >= minus:
             return self.repo.minus_inventory(book_id, minus)
         raise HTTPException(status_code=404, detail="that id is not exist")
 
@@ -74,11 +72,8 @@ class BorrowService:
             return self.repo.get_by_user_id(user_id)
         raise HTTPException(status_code=404, detail="that id is not exist")
 
-
     def delete(self, borrow_id: int):
-        if self.repo.id_exist(borrow_id):
-            return self.repo.delete(borrow_id)
-        raise HTTPException(status_code=404, detail="that id is not exist")
+        return self.repo.delete(borrow_id)
 
     def create(self, borrow_data):
         book_service = BooksService(BooksRepo)
