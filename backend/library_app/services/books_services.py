@@ -1,6 +1,3 @@
-from operator import invert
-from tokenize import detect_encoding
-
 from backend.library_app.repositories.books_repo import BooksRepo, BorrowRepo
 from fastapi import HTTPException
 
@@ -48,6 +45,12 @@ class BooksService:
             return self.repo.minus_inventory(book_id, minus)
         raise HTTPException(status_code=404, detail="that id is not exist")
 
+    def plus_inventory(self, book_id: int, plus: int = 1):
+        if self.repo.id_exist(book_id):
+            return self.repo.plus_inventory(book_id, plus)
+        raise HTTPException(status_code=404, detail="that id is not exist")
+
+
 
 class BorrowService:
     def __init__(self, repo: BorrowRepo ):
@@ -87,7 +90,11 @@ class BorrowService:
         return self.repo.create(borrow_data)
 
     def gave_back(self, user_id: int, book_id: int):
+        book_service = BooksService(BooksRepo)
         if self.repo.is_gave_back(user_id, book_id):
             raise HTTPException(status_code=409, detail="you already return the book")
+        book_service.plus_inventory(book_id)
         return self.repo.update_gave_back(user_id, book_id)
+
+
 
