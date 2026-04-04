@@ -79,10 +79,6 @@ class BorrowService:
 
     def create(self, borrow_data):
         book_service = BooksService(BooksRepo)
-        if not self.repo.user_id_exist(borrow_data.user_id):
-            raise HTTPException(status_code=404, detail="User is not exist")
-        if not self.repo.book_id_exist(borrow_data.book_id):
-            raise HTTPException(status_code=404, detail="That book is not exist")
         if not self.repo.is_gave_back(borrow_data.user_id, borrow_data.book_id):
             raise HTTPException(status_code=409, detail="At first return the book")
         if book_service.get_inventory_count(borrow_data.book_id) == 0:
@@ -91,10 +87,6 @@ class BorrowService:
         return self.repo.create(borrow_data)
 
     def gave_back(self, user_id: int, book_id: int):
-        if not self.repo.user_id_exist(user_id):
-            raise HTTPException(status_code=404, detail="User is not exist")
-        if not self.repo.book_id_exist(book_id):
-            raise HTTPException(status_code=404, detail="That book is not exist")
         if self.repo.is_gave_back(user_id, book_id):
             raise HTTPException(status_code=409, detail="you already return the book")
         return self.repo.update_gave_back(user_id, book_id)
